@@ -4,5 +4,5 @@
 
 \[2\] Java设计模式：23种设计模式全面解析: [http://c.biancheng.net/design\_pattern/](http://c.biancheng.net/design_pattern/)
 
-\[3\] 使用Google Guice实现依赖注入: [https://www.imooc.com/learn/901](https://www.imooc.com/learn/901)
+\[3\] 王争: 设计模式之美
 
