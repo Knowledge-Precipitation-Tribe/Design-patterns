@@ -218,6 +218,8 @@ public class Example {
 }
 ```
 
+#### how
+
 多态这种特性也需要编程语言提供特殊的语法机制来实现。在上面的例子中，我们用到了三个语法机制来实现多态。
 
 * 第一个语法机制是编程语言要支持父类对象可以引用子类对象，也就是可以将 SortedDynamicArray 传递给 DynamicArray。
@@ -226,7 +228,90 @@ public class Example {
 
 通过这三种语法机制配合在一起，我们就实现了在 test\(\) 方法中，子类 SortedDyamicArray 替换父类 DynamicArray，执行子类 SortedDyamicArray 的 add\(\) 方法，也就是实现了多态特性。
 
-对于多态特性的实现方式，除了利用“继承加方法重写”这种实现方式之外，我们还有其他两种比较常见的的实现方式，一个是利用接口类语法，另一个是利用 duck-typing 语法。不过，并不是每种编程语言都支持接口类或者 duck-typing 这两种语法机制，比如 C++ 就不支持接口类语法，而 duck-typing 只有一些动态语言才支持，比如 Python、JavaScript 等。
+对于多态特性的实现方式，除了利用“继承加方法重写”这种实现方式之外，我们还有其他两种比较常见的的实现方式，一个是利用接口语法，另一个是利用 duck-typing 语法。不过，并不是每种编程语言都支持接口类或者 duck-typing 这两种语法机制，比如 C++ 就不支持接口类语法，而 duck-typing 只有一些动态语言才支持，比如 Python、JavaScript 等。
+
+接下来，我们先来看**如何利用接口来实现多态特性**。我们还是先来看一段代码。
+
+```java
+public interface Iterator {
+  String hasNext();
+  String next();
+  String remove();
+}
+
+public class Array implements Iterator {
+  private String[] data;
+  
+  public String hasNext() { ... }
+  public String next() { ... }
+  public String remove() { ... }
+  //...省略其他方法...
+}
+
+public class LinkedList implements Iterator {
+  private LinkedListNode head;
+  
+  public String hasNext() { ... }
+  public String next() { ... }
+  public String remove() { ... }
+  //...省略其他方法... 
+}
+
+public class Demo {
+  private static void print(Iterator iterator) {
+    while (iterator.hasNext()) {
+      System.out.println(iterator.next());
+    }
+  }
+  
+  public static void main(String[] args) {
+    Iterator arrayIterator = new Array();
+    print(arrayIterator);
+    
+    Iterator linkedListIterator = new LinkedList();
+    print(linkedListIterator);
+  }
+}
+```
+
+在这段代码中，Iterator 是一个接口类，定义了一个可以遍历集合数据的迭代器。Array 和 LinkedList 都实现了接口类 Iterator。我们通过传递不同类型的实现类（Array、LinkedList）到 print\(Iterator iterator\) 函数中，支持动态的调用不同的 next\(\)、hasNext\(\) 实现。
+
+具体点讲就是，当我们往 print\(Iterator iterator\) 函数传递 Array 类型的对象的时候，print\(Iterator iterator\) 函数就会调用 Array 的 next\(\)、hasNext\(\) 的实现逻辑；当我们往 print\(Iterator iterator\) 函数传递 LinkedList 类型的对象的时候，print\(Iterator iterator\) 函数就会调用 LinkedList 的 next\(\)、hasNext\(\) 的实现逻辑。
+
+刚刚讲的是用接口来实现多态特性。现在，我们再来看下，如何**用 duck-typing 来实现多态特性**。我们还是先来看一段代码。这是一段 Python 代码。
+
+```python
+class Logger:
+    def record(self):
+        print(“I write a log into file.”)
+        
+class DB:
+    def record(self):
+        print(“I insert data into db. ”)
+        
+def test(recorder):
+    recorder.record()
+
+def demo():
+    logger = Logger()
+    db = DB()
+    test(logger)
+    test(db)
+```
+
+从这段代码中，我们发现，duck-typing 实现多态的方式非常灵活。Logger 和 DB 两个类没有任何关系，既不是继承关系，也不是接口和实现的关系，但是只要它们都有定义了 record\(\) 方法，就可以被传递到 test\(\) 方法中，在实际运行的时候，执行对应的 record\(\) 方法。
+
+也就是说，只要两个类具有相同的方法，就可以实现多态，并不要求两个类之间有任何关系，这就是所谓的 duck-typing，是一些动态语言所特有的语法机制。而像 Java 这样的静态语言，通过继承实现多态特性，必须要求两个类之间有继承关系，通过接口实现多态特性，类必须实现对应的接口。
+
+#### why
+
+多态特性能提高代码的可扩展性和复用性。为什么这么说呢？我们回过头去看讲解多态特性的时候，举的第二个代码实例（Iterator 的例子）。
+
+在那个例子中，我们利用多态的特性，仅用一个 print\(\) 函数就可以实现遍历打印不同类型（Array、LinkedList）集合的数据。当再增加一种要遍历打印的类型的时候，比如 HashMap，我们只需让 HashMap 实现 Iterator 接口，重新实现自己的 hasNext\(\)、next\(\) 等方法就可以了，完全不需要改动 print\(\) 函数的代码。所以说，多态提高了代码的可扩展性。
+
+如果我们不使用多态特性，我们就无法将不同的集合类型（Array、LinkedList）传递给相同的函数（print\(Iterator iterator\) 函数）。我们需要针对每种要遍历打印的集合，分别实现不同的 print\(\) 函数，比如针对 Array，我们要实现 print\(Array array\) 函数，针对 LinkedList，我们要实现 print\(LinkedList linkedList\) 函数。而利用多态特性，我们只需要实现一个 print\(\) 函数的打印逻辑，就能应对各种集合数据的打印操作，这显然提高了代码的复用性。
+
+除此之外，多态也是很多设计模式、设计原则、编程技巧的代码实现基础，比如策略模式、基于接口而非实现编程、依赖倒置原则、里式替换原则、利用多态去掉冗长的 if-else 语句等等。
 
 ## 面向对象分析OOA
 
