@@ -6,7 +6,7 @@
 
 下面这段代码是一个比较典型的抽象类的使用场景（模板设计模式）。Logger 是一个记录日志的抽象类，FileLogger 和 MessageQueueLogger 继承 Logger，分别实现两种不同的日志记录方式：记录日志到文件中和记录日志到消息队列中。FileLogger 和 MessageQueueLogger 两个子类复用了父类 Logger 中的 name、enabled、minPermittedLevel 属性和 log\(\) 方法，但因为这两个子类写日志的方式不同，它们又各自重写了父类中的 doLog\(\) 方法。
 
-```python
+```java
 // 抽象类
 public abstract class Logger {
   private String name;
@@ -71,7 +71,7 @@ public class MessageQueueLogger extends Logger {
 
 ## Java如何定义接口
 
-```python
+```java
 // 接口
 public interface Filter {
   void doFilter(RpcRequest req) throws RpcException;
@@ -133,7 +133,7 @@ public class Application {
 
 我们还是拿之前那个打印日志的例子来讲解。我们先对上面的代码做下改造。在改造之后的代码中，Logger 不再是抽象类，只是一个普通的父类，删除了 Logger 中 log\(\)、doLog\(\) 方法，新增了 isLoggable\(\) 方法。FileLogger 和 MessageQueueLogger 还是继承 Logger 父类，以达到代码复用的目的。具体的代码如下：
 
-```python
+```java
 // 父类：非抽象类，就是普通的类. 删除了log(),doLog()，新增了isLoggable().
 public class Logger {
   private String name;
@@ -183,14 +183,14 @@ public class MessageQueueLogger extends Logger {
 
 这个设计思路虽然达到了代码复用的目的，但是无法使用多态特性了。像下面这样编写代码，就会出现编译错误，因为 Logger 中并没有定义 log\(\) 方法。
 
-```python
+```java
 Logger logger = new FileLogger("access-log", true, Level.WARN, "/users/wangzheng/access.log");
 logger.log(Level.ERROR, "This is a test log message.");
 ```
 
 你可能会说，这个问题解决起来很简单啊。我们在 Logger 父类中，定义一个空的 log\(\) 方法，让子类重写父类的 log\(\) 方法，实现自己的记录日志的逻辑，不就可以了吗？
 
-```python
+```java
 public class Logger {
   // ...省略部分代码...
   public void log(Level level, String mesage) { // do nothing... }
@@ -241,7 +241,7 @@ public class MessageQueueLogger extends Logger {
 
 假设我们的系统中有很多涉及图片处理和存储的业务逻辑。图片经过处理之后被上传到阿里云上。为了代码复用，我们封装了图片存储相关的代码逻辑，提供了一个统一的 AliyunImageStore 类，供整个系统来使用。具体的代码实现如下所示：
 
-```python
+```java
 public class AliyunImageStore {
   //...省略属性、构造函数等...
   
@@ -300,7 +300,7 @@ public class ImageProcessingJob {
 
 我们按照这个思路，把代码重构一下。重构后的代码如下所示：
 
-```python
+```java
 public interface ImageStore {
   String upload(Image image, String bucketName);
   Image download(String url);
