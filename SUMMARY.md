@@ -5,6 +5,7 @@
 * [面向对象、设计原则、设计模式、编程规范、重构，这五者有何关系？](mian-xiang-dui-xiang-she-ji-yuan-ze-she-ji-mo-shi-bian-cheng-gui-fan-zhong-gou-zhe-wu-zhe-you-he-gua.md)
 * [面向对象](mian-xiang-dui-xiang/README.md)
   * [什么是面向对象](mian-xiang-dui-xiang/shen-me-shi-mian-xiang-dui-xiang.md)
+  * [面向过程与面向对象](mian-xiang-dui-xiang/mian-xiang-guo-cheng-yu-mian-xiang-dui-xiang.md)
   * [组合与继承](mian-xiang-dui-xiang/zu-he-yu-ji-cheng.md)
 * [设计原则](she-ji-yuan-ze.md)
 * [创建型模式](chuang-jian-xing-mo-shi.md)
