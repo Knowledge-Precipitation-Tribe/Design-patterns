@@ -8,6 +8,8 @@
   * [面向过程与面向对象](mian-xiang-dui-xiang/mian-xiang-guo-cheng-yu-mian-xiang-dui-xiang.md)
   * [接口和抽象类](mian-xiang-dui-xiang/jie-kou-he-chou-xiang-lei.md)
   * [组合与继承](mian-xiang-dui-xiang/zu-he-yu-ji-cheng.md)
+  * [实践一](mian-xiang-dui-xiang/shi-jian-yi.md)
+  * [实践二](mian-xiang-dui-xiang/shi-jian-er.md)
 * [设计原则](she-ji-yuan-ze.md)
 * [创建型模式](chuang-jian-xing-mo-shi.md)
 * [结构型模式](jie-gou-xing-mo-shi.md)
