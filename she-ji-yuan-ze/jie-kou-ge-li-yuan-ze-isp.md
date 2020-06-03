@@ -37,6 +37,24 @@ public class UserServiceImpl implements UserService {
 
 当然，最好的解决方案是从架构设计的层面，通过接口鉴权的方式来限制接口的调用。不过，如果暂时没有鉴权框架来支持，我们还可以从代码设计的层面，尽量避免接口被误用。我们参照接口隔离原则，调用者不应该强迫依赖它不需要的接口，将删除接口单独放到另外一个接口 RestrictedUserService 中，然后将 RestrictedUserService 只打包提供给后台管理系统来使用。具体的代码实现如下所示：
 
+```java
+public interface UserService {
+  boolean register(String cellphone, String password);
+  boolean login(String cellphone, String password);
+  UserInfo getUserInfoById(long id);
+  UserInfo getUserInfoByCellphone(String cellphone);
+}
+
+public interface RestrictedUserService {
+  boolean deleteUserByCellphone(String cellphone);
+  boolean deleteUserById(long id);
+}
+
+public class UserServiceImpl implements UserService, RestrictedUserService {
+  // ...省略实现代码...
+}
+```
+
 在刚刚的这个例子中，我们把接口隔离原则中的接口，理解为一组接口集合，它可以是某个微服务的接口，也可以是某个类库的接口等等。在设计微服务或者类库接口的时候，如果部分接口只被部分调用者使用，那我们就需要将这部分接口隔离出来，单独给对应的调用者使用，而不是强迫其他调用者也依赖这部分不会被用到的接口。
 
 ## 把“接口”理解为单个 API 接口或函数
@@ -108,7 +126,7 @@ public class KafkaConfig { //...省略... }
 public class MysqlConfig { //...省略... }
 ```
 
-现在，我们有一个新的功能需求，希望支持 Redis 和 Kafka 配置信息的热更新。所谓“热更新（hot update）”就是，如果在配置中心中更改了配置信息，我们希望在不用重启系统的情况下，能将最新的配置信息加载到内存中（也就是 RedisConfig、KafkaConfig 类中）。但是，因为某些原因，我们并不希望对 MySQL 的配置信息进行热更新。
+现在，我们有一个新的功能需求，希望支持 Redis 和 Kafka 配置信息的热更新。**所谓“热更新（hot update）”就是，如果在配置中心中更改了配置信息，我们希望在不用重启系统的情况下，能将最新的配置信息加载到内存中（也就是 RedisConfig、KafkaConfig 类中）**。但是，因为某些原因，我们并不希望对 MySQL 的配置信息进行热更新。
 
 为了实现这样一个功能需求，我们设计实现了一个 ScheduledUpdater 类，以固定时间频率（periodInSeconds）来调用 RedisConfig、KafkaConfig 的 update\(\) 方法更新配置信息。具体的代码实现如下所示：
 
