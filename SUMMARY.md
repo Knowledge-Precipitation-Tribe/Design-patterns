@@ -15,6 +15,7 @@
   * [开闭原则-OCP](she-ji-yuan-ze/kai-bi-yuan-ze-ocp.md)
   * [里氏替换原则-LSP](she-ji-yuan-ze/li-shi-ti-huan-yuan-ze-lsp.md)
   * [接口隔离原则-ISP](she-ji-yuan-ze/jie-kou-ge-li-yuan-ze-isp.md)
+  * [控制反转-IOC](she-ji-yuan-ze/kong-zhi-fan-zhuan-ioc.md)
 * [创建型模式](chuang-jian-xing-mo-shi.md)
 * [结构型模式](jie-gou-xing-mo-shi.md)
 * [行为型模式](hang-wei-xing-mo-shi.md)
