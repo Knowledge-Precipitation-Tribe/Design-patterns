@@ -6,3 +6,5 @@
 
 \[3\] 王争: 设计模式之美
 
+\[4\] 设计模式：[https://refactoringguru.cn/design-patterns](https://refactoringguru.cn/design-patterns)
+
