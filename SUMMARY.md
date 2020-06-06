@@ -17,6 +17,8 @@
   * [接口隔离原则-ISP](she-ji-yuan-ze/jie-kou-ge-li-yuan-ze-isp.md)
   * [控制反转-IOC](she-ji-yuan-ze/kong-zhi-fan-zhuan-ioc.md)
   * [KISS原则](she-ji-yuan-ze/kiss-yuan-ze.md)
+  * [DRY原则](she-ji-yuan-ze/dry-yuan-ze.md)
+  * [迪米特法则LOD](she-ji-yuan-ze/di-mi-te-fa-ze-lod.md)
 * [创建型模式](chuang-jian-xing-mo-shi.md)
 * [结构型模式](jie-gou-xing-mo-shi.md)
 * [行为型模式](hang-wei-xing-mo-shi.md)
