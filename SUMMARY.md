@@ -28,6 +28,8 @@
   * [如何通过封装、抽象、模块化、中间层等解耦代码？](gui-fan-yu-zhong-gou/ru-he-tong-guo-feng-zhuang-chou-xiang-mo-kuai-hua-zhong-jian-ceng-deng-jie-ou-dai-ma.md)
   * [改善代码质量的20条编程规范](gui-fan-yu-zhong-gou/gai-shan-dai-ma-zhi-liang-de-20-tiao-bian-cheng-gui-fan.md)
   * [实战-ID生成器](gui-fan-yu-zhong-gou/shi-zhan-id-sheng-cheng-qi.md)
+* [总结回顾面向对象、设计原则、编程规范、重构技巧等知识点](zong-jie-hui-gu-mian-xiang-dui-xiang-she-ji-yuan-ze-bian-cheng-gui-fan-zhong-gou-ji-qiao-deng-zhi-sh.md)
+* [实战-性能计数器](shi-zhan-xing-neng-ji-shu-qi.md)
 * [创建型模式](chuang-jian-xing-mo-shi.md)
 * [结构型模式](jie-gou-xing-mo-shi.md)
 * [行为型模式](hang-wei-xing-mo-shi.md)
