@@ -1,5 +1,7 @@
 # 单例模式
 
+![](../.gitbook/assets/image%20%2838%29.png)
+
 ## 什么是单例模式
 
 单例设计模式（Singleton Design Pattern）理解起来非常简单。一个类只允许创建一个对象（或者实例），那这个类就是一个单例类，这种设计模式就叫作单例设计模式，简称单例模式。
@@ -653,5 +655,9 @@ Logger l2 = Logger.getInstance("User.class");
 Logger l3 = Logger.getInstance("Order.class");
 ```
 
+## 代码位置
 
+\[1\] [单例模式](https://github.com/Knowledge-Precipitation-Tribe/Design-patterns/tree/master/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/src/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F)
+
+\[2\] [**SingletonPattern**](https://github.com/Knowledge-Precipitation-Tribe/Design-patterns/tree/master/%E5%A4%A7%E8%AF%9D%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/src/SingletonPattern)\*\*\*\*
 
