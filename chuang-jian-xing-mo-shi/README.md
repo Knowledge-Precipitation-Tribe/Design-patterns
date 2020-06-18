@@ -2,5 +2,5 @@
 
 创建型模式提供了创建对象的机制， 能够提升已有代码的灵活性和可复用性。
 
-![](.gitbook/assets/image%20%2820%29.png)
+![](../.gitbook/assets/image%20%2820%29.png)
 
