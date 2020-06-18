@@ -1,6 +1,6 @@
 package FactoryMethodPattern;
 
-public class VokunteerFactory implements IFactory {
+public class VolunteerFactory implements IFactory {
     @Override
     public LeiFeng createLeifeng() {
         return new Volunter();
