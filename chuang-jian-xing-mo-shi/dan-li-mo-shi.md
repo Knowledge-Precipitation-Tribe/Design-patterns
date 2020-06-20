@@ -655,6 +655,10 @@ Logger l2 = Logger.getInstance("User.class");
 Logger l3 = Logger.getInstance("Order.class");
 ```
 
+## 单例模式要解决的核心问题
+
+单例模式主要是防止创建多个对象，可用于节约对象的创建造成的资源浪费，而且有些情况下只有一个全局对象也方便我们进行管理。
+
 ## 代码位置
 
 \[1\] [单例模式](https://github.com/Knowledge-Precipitation-Tribe/Design-patterns/tree/master/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/src/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F)
