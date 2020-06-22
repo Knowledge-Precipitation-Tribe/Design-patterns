@@ -1,6 +1,6 @@
 # 代理模式
 
-![](../.gitbook/assets/image%20%2841%29.png)
+![](../.gitbook/assets/image%20%2842%29.png)
 
 ## 什么是代理模式
 

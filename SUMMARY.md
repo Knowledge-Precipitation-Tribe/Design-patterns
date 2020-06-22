@@ -39,6 +39,7 @@
 * [结构型模式](jie-gou-xing-mo-shi/README.md)
   * [代理模式](jie-gou-xing-mo-shi/dai-li-mo-shi.md)
   * [桥接模式](jie-gou-xing-mo-shi/qiao-jie-mo-shi.md)
+  * [装饰器模式](jie-gou-xing-mo-shi/zhuang-shi-qi-mo-shi.md)
 * [行为型模式](hang-wei-xing-mo-shi.md)
 * [参考文献](can-kao-wen-xian.md)
 

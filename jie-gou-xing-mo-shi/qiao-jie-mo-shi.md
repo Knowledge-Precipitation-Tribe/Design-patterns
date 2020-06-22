@@ -1,5 +1,7 @@
 # 桥接模式
 
+![](../.gitbook/assets/image%20%2841%29.png)
+
 ## 什么是桥接模式
 
 在 GoF 的《设计模式》一书中，桥接模式是这么定义的：“Decouple an abstraction from its implementation so that the two can vary independently。”翻译成中文就是：“将抽象和实现解耦，让它们可以独立变化。”
@@ -8,7 +10,7 @@
 
 桥接模式的代码实现非常简单，但是理解起来稍微有点难度，并且应用场景也比较局限，所以，相当于代理模式来说，桥接模式在实际的项目中并没有那么常用，只需要简单了解，见到能认识就可以。
 
-## 实战
+## 实战1
 
 ### JDBC驱动
 
@@ -58,5 +60,178 @@ public class Driver extends NonRegisteringDriver implements java.sql.Driver {
 }
 ```
 
+结合 com.mysql.jdbc.Driver 的代码实现，我们可以发现，当执行 Class.forName\(“com.mysql.jdbc.Driver”\) 这条语句的时候，实际上是做了两件事情。第一件事情是要求 JVM 查找并加载指定的 Driver 类，第二件事情是执行该类的静态代码，也就是将 MySQL Driver 注册到 DriverManager 类中。
 
+现在，我们再来看一下，DriverManager 类是干什么用的。具体的代码如下所示。当我们把具体的 Driver 实现类（比如，com.mysql.jdbc.Driver）注册到 DriverManager 之后，后续所有对 JDBC 接口的调用，都会委派到对具体的 Driver 实现类来执行。而 Driver 实现类都实现了相同的接口（java.sql.Driver ），这也是可以灵活切换 Driver 的原因。
+
+```java
+public class DriverManager {
+  private final static CopyOnWriteArrayList<DriverInfo> registeredDrivers = new CopyOnWriteArrayList<DriverInfo>();
+
+  //...
+  static {
+    loadInitialDrivers();
+    println("JDBC DriverManager initialized");
+  }
+  //...
+
+  public static synchronized void registerDriver(java.sql.Driver driver) throws SQLException {
+    if (driver != null) {
+      registeredDrivers.addIfAbsent(new DriverInfo(driver));
+    } else {
+      throw new NullPointerException();
+    }
+  }
+
+  public static Connection getConnection(String url, String user, String password) throws SQLException {
+    java.util.Properties info = new java.util.Properties();
+    if (user != null) {
+      info.put("user", user);
+    }
+    if (password != null) {
+      info.put("password", password);
+    }
+    return (getConnection(url, info, Reflection.getCallerClass()));
+  }
+  //...
+}
+```
+
+那在 JDBC 这个例子中，什么是“抽象”？什么是“实现”呢？
+
+实际上，JDBC 本身就相当于“抽象”。注意，这里所说的“抽象”，指的并非“抽象类”或“接口”，而是跟具体的数据库无关的、被抽象出来的一套“类库”。具体的 Driver（比如，com.mysql.jdbc.Driver）就相当于“实现”。注意，这里所说的“实现”，也并非指“接口的实现类”，而是跟具体数据库相关的一套“类库”。JDBC 和 Driver 独立开发，通过对象之间的组合关系，组装在一起。JDBC 的所有逻辑操作，最终都委托给 Driver 来执行。
+
+![](../.gitbook/assets/image%20%2848%29.png)
+
+## 实战2
+
+### 版本1
+
+我们来看一个API接口监控告警的例子：根据不同的告警规则，触发不同类型的告警。告警支持多种通知渠道，包括：邮件、短信、微信、自动语音电话。通知的紧急程度有多种类型，包括：SEVERE（严重）、URGENCY（紧急）、NORMAL（普通）、TRIVIAL（无关紧要）。不同的紧急程度对应不同的通知渠道。比如，SERVE（严重）级别的消息会通过“自动语音电话”告知相关人员。
+
+在当时的代码实现中，关于发送告警信息那部分代码，我们只给出了粗略的设计，现在我们来一块实现一下。我们先来看最简单、最直接的一种实现方式。代码如下所示：
+
+```java
+public enum NotificationEmergencyLevel {
+  SEVERE, URGENCY, NORMAL, TRIVIAL
+}
+
+public class Notification {
+  private List<String> emailAddresses;
+  private List<String> telephones;
+  private List<String> wechatIds;
+
+  public Notification() {}
+
+  public void setEmailAddress(List<String> emailAddress) {
+    this.emailAddresses = emailAddress;
+  }
+
+  public void setTelephones(List<String> telephones) {
+    this.telephones = telephones;
+  }
+
+  public void setWechatIds(List<String> wechatIds) {
+    this.wechatIds = wechatIds;
+  }
+
+  public void notify(NotificationEmergencyLevel level, String message) {
+    if (level.equals(NotificationEmergencyLevel.SEVERE)) {
+      //...自动语音电话
+    } else if (level.equals(NotificationEmergencyLevel.URGENCY)) {
+      //...发微信
+    } else if (level.equals(NotificationEmergencyLevel.NORMAL)) {
+      //...发邮件
+    } else if (level.equals(NotificationEmergencyLevel.TRIVIAL)) {
+      //...发邮件
+    }
+  }
+}
+
+//在API监控告警的例子中，我们如下方式来使用Notification类：
+public class ErrorAlertHandler extends AlertHandler {
+  public ErrorAlertHandler(AlertRule rule, Notification notification){
+    super(rule, notification);
+  }
+
+
+  @Override
+  public void check(ApiStatInfo apiStatInfo) {
+    if (apiStatInfo.getErrorCount() > rule.getMatchedRule(apiStatInfo.getApi()).getMaxErrorCount()) {
+      notification.notify(NotificationEmergencyLevel.SEVERE, "...");
+    }
+  }
+}
+```
+
+Notification 类的代码实现有一个最明显的问题，那就是有很多 if-else 分支逻辑。实际上，如果每个分支中的代码都不复杂，后期也没有无限膨胀的可能（增加更多 if-else 分支判断），那这样的设计问题并不大，没必要非得一定要摒弃 if-else 分支逻辑。
+
+不过，Notification 的代码显然不符合这个条件。因为每个 if-else 分支中的代码逻辑都比较复杂，发送通知的所有逻辑都扎堆在 Notification 类中。我们知道，类的代码越多，就越难读懂，越难修改，维护的成本也就越高。很多设计模式都是试图将庞大的类拆分成更细小的类，然后再通过某种更合理的结构组装在一起。
+
+### 重构
+
+针对 Notification 的代码，我们将不同渠道的发送逻辑剥离出来，形成独立的消息发送类（MsgSender 相关类）。其中，Notification 类相当于抽象，MsgSender 类相当于实现，两者可以独立开发，通过组合关系（也就是桥梁）任意组合在一起。所谓任意组合的意思就是，不同紧急程度的消息和发送渠道之间的对应关系，不是在代码中固定写死的，我们可以动态地去指定（比如，通过读取配置来获取对应关系）。
+
+```java
+public interface MsgSender {
+  void send(String message);
+}
+
+public class TelephoneMsgSender implements MsgSender {
+  private List<String> telephones;
+
+  public TelephoneMsgSender(List<String> telephones) {
+    this.telephones = telephones;
+  }
+
+  @Override
+  public void send(String message) {
+    //...
+  }
+
+}
+
+public class EmailMsgSender implements MsgSender {
+  // 与TelephoneMsgSender代码结构类似，所以省略...
+}
+
+public class WechatMsgSender implements MsgSender {
+  // 与TelephoneMsgSender代码结构类似，所以省略...
+}
+
+public abstract class Notification {
+  protected MsgSender msgSender;
+
+  public Notification(MsgSender msgSender) {
+    this.msgSender = msgSender;
+  }
+
+  public abstract void notify(String message);
+}
+
+public class SevereNotification extends Notification {
+  public SevereNotification(MsgSender msgSender) {
+    super(msgSender);
+  }
+
+  @Override
+  public void notify(String message) {
+    msgSender.send(message);
+  }
+}
+
+public class UrgencyNotification extends Notification {
+  // 与SevereNotification代码结构类似，所以省略...
+}
+public class NormalNotification extends Notification {
+  // 与SevereNotification代码结构类似，所以省略...
+}
+public class TrivialNotification extends Notification {
+  // 与SevereNotification代码结构类似，所以省略...
+}
+```
+
+## 代码位置
+
+\[1\] [**BridgePattern**](https://github.com/Knowledge-Precipitation-Tribe/Design-patterns/tree/master/%E5%A4%A7%E8%AF%9D%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/src/BridgePattern)\*\*\*\*
 
