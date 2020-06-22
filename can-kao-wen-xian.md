@@ -8,3 +8,5 @@
 
 \[4\] 设计模式：[https://refactoringguru.cn/design-patterns](https://refactoringguru.cn/design-patterns)
 
+\[5\] 设计模式（最易懂系列）：[https://blog.csdn.net/carson\_ho/category\_6365482.html](https://blog.csdn.net/carson_ho/category_6365482.html)
+

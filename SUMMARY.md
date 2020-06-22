@@ -36,7 +36,9 @@
   * [DI容器](chuang-jian-xing-mo-shi/di-rong-qi.md)
   * [建造者模式](chuang-jian-xing-mo-shi/jian-zao-zhe-mo-shi.md)
   * [原型模式](chuang-jian-xing-mo-shi/yuan-xing-mo-shi.md)
-* [结构型模式](jie-gou-xing-mo-shi.md)
+* [结构型模式](jie-gou-xing-mo-shi/README.md)
+  * [代理模式](jie-gou-xing-mo-shi/dai-li-mo-shi.md)
+  * [桥接模式](jie-gou-xing-mo-shi/qiao-jie-mo-shi.md)
 * [行为型模式](hang-wei-xing-mo-shi.md)
 * [参考文献](can-kao-wen-xian.md)
 
