@@ -86,5 +86,52 @@ public class Adaptor implements ITarget {
 
 一般来说，适配器模式可以看作一种“补偿模式”，用来补救设计上的缺陷。应用这种模式算是“无奈之举”。如果在设计初期，我们就能协调规避接口不兼容的问题，那这种模式就没有应用的机会了。
 
+### 封装有缺陷的接口设计
+
+假设我们依赖的外部系统在接口设计方面有缺陷（比如包含大量静态方法），引入之后会影响到我们自身代码的可测试性。为了隔离设计上的缺陷，我们希望对外部系统提供的接口进行二次封装，抽象出更好的接口设计，这个时候就可以使用适配器模式了。
+
+具体我还是举个例子来解释一下，你直接看代码应该会更清晰。具体代码如下所示：
+
+```java
+public class CD { //这个类来自外部sdk，我们无权修改它的代码
+  //...
+  public static void staticFunction1() { //... }
+  
+  public void uglyNamingFunction2() { //... }
+
+  public void tooManyParamsFunction3(int paramA, int paramB, ...) { //... }
+  
+   public void lowPerformanceFunction4() { //... }
+}
+
+// 使用适配器模式进行重构
+public class ITarget {
+  void function1();
+  void function2();
+  void fucntion3(ParamsWrapperDefinition paramsWrapper);
+  void function4();
+  //...
+}
+// 注意：适配器类的命名不一定非得末尾带Adaptor
+public class CDAdaptor extends CD implements ITarget {
+  //...
+  public void function1() {
+     super.staticFunction1();
+  }
+  
+  public void function2() {
+    super.uglyNamingFucntion2();
+  }
+  
+  public void function3(ParamsWrapperDefinition paramsWrapper) {
+     super.tooManyParamsFunction3(paramsWrapper.getParamA(), ...);
+  }
+  
+  public void function4() {
+    //...reimplement it...
+  }
+}
+```
+
 
 
