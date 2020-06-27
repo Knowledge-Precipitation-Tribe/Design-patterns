@@ -1,5 +1,7 @@
 # 适配器模式
 
+![](../.gitbook/assets/image%20%2852%29.png)
+
 ## 什么是适配器模式
 
 适配器模式的英文翻译是 Adapter Design Pattern。顾名思义，这个模式就是用来做适配的，它将不兼容的接口转换为可兼容的接口，让原本由于接口不兼容而不能一起工作的类可以一起工作。对于这个模式，有一个经常被拿来解释它的例子，就是 USB 转接头充当适配器，把两种不兼容的接口，通过转接变得可以一起工作。
@@ -133,5 +135,160 @@ public class CDAdaptor extends CD implements ITarget {
 }
 ```
 
+### 统一多个类的接口设计
 
+某个功能的实现依赖多个外部系统（或者说类）。通过适配器模式，将它们的接口适配为统一的接口定义，然后我们就可以使用多态的特性来复用代码逻辑。具体我还是举个例子来解释一下。
+
+假设我们的系统要对用户输入的文本内容做敏感词过滤，为了提高过滤的召回率，我们引入了多款第三方敏感词过滤系统，依次对用户输入的内容进行过滤，过滤掉尽可能多的敏感词。但是，每个系统提供的过滤接口都是不同的。这就意味着我们没法复用一套逻辑来调用各个系统。这个时候，我们就可以使用适配器模式，将所有系统的接口适配为统一的接口定义，这样我们可以复用调用敏感词过滤的代码。
+
+```java
+public class ASensitiveWordsFilter { // A敏感词过滤系统提供的接口
+  //text是原始文本，函数输出用***替换敏感词之后的文本
+  public String filterSexyWords(String text) {
+    // ...
+  }
+  
+  public String filterPoliticalWords(String text) {
+    // ...
+  } 
+}
+
+public class BSensitiveWordsFilter  { // B敏感词过滤系统提供的接口
+  public String filter(String text) {
+    //...
+  }
+}
+
+public class CSensitiveWordsFilter { // C敏感词过滤系统提供的接口
+  public String filter(String text, String mask) {
+    //...
+  }
+}
+
+// 未使用适配器模式之前的代码：代码的可测试性、扩展性不好
+public class RiskManagement {
+  private ASensitiveWordsFilter aFilter = new ASensitiveWordsFilter();
+  private BSensitiveWordsFilter bFilter = new BSensitiveWordsFilter();
+  private CSensitiveWordsFilter cFilter = new CSensitiveWordsFilter();
+  
+  public String filterSensitiveWords(String text) {
+    String maskedText = aFilter.filterSexyWords(text);
+    maskedText = aFilter.filterPoliticalWords(maskedText);
+    maskedText = bFilter.filter(maskedText);
+    maskedText = cFilter.filter(maskedText, "***");
+    return maskedText;
+  }
+}
+
+// 使用适配器模式进行改造
+public interface ISensitiveWordsFilter { // 统一接口定义
+  String filter(String text);
+}
+
+public class ASensitiveWordsFilterAdaptor implements ISensitiveWordsFilter {
+  private ASensitiveWordsFilter aFilter;
+  public String filter(String text) {
+    String maskedText = aFilter.filterSexyWords(text);
+    maskedText = aFilter.filterPoliticalWords(maskedText);
+    return maskedText;
+  }
+}
+//...省略BSensitiveWordsFilterAdaptor、CSensitiveWordsFilterAdaptor...
+
+// 扩展性更好，更加符合开闭原则，如果添加一个新的敏感词过滤系统，
+// 这个类完全不需要改动；而且基于接口而非实现编程，代码的可测试性更好。
+public class RiskManagement { 
+  private List<ISensitiveWordsFilter> filters = new ArrayList<>();
+ 
+  public void addSensitiveWordsFilter(ISensitiveWordsFilter filter) {
+    filters.add(filter);
+  }
+  
+  public String filterSensitiveWords(String text) {
+    String maskedText = text;
+    for (ISensitiveWordsFilter filter : filters) {
+      maskedText = filter.filter(maskedText);
+    }
+    return maskedText;
+  }
+}
+```
+
+### 替换依赖的外部系统
+
+当我们把项目中依赖的一个外部系统替换为另一个外部系统的时候，利用适配器模式，可以减少对代码的改动。具体的代码示例如下所示：
+
+```java
+// 外部系统A
+public interface IA {
+  //...
+  void fa();
+}
+public class A implements IA {
+  //...
+  public void fa() { //... }
+}
+// 在我们的项目中，外部系统A的使用示例
+public class Demo {
+  private IA a;
+  public Demo(IA a) {
+    this.a = a;
+  }
+  //...
+}
+Demo d = new Demo(new A());
+
+// 将外部系统A替换成外部系统B
+public class BAdaptor implemnts IA {
+  private B b;
+  public BAdaptor(B b) {
+    this.b= b;
+  }
+  public void fa() {
+    //...
+    b.fb();
+  }
+}
+// 借助BAdaptor，Demo的代码中，调用IA接口的地方都无需改动，
+// 只需要将BAdaptor如下注入到Demo即可。
+Demo d = new Demo(new BAdaptor(new B()));
+```
+
+### 兼容老版本接口
+
+在做版本升级的时候，对于一些要废弃的接口，我们不直接将其删除，而是暂时保留，并且标注为 deprecated，并将内部实现逻辑委托为新的接口实现。这样做的好处是，让使用它的项目有个过渡期，而不是强制进行代码修改。这也可以粗略地看作适配器模式的一个应用场景。同样，我还是通过一个例子，来进一步解释一下。
+
+JDK1.0 中包含一个遍历集合容器的类 Enumeration。JDK2.0 对这个类进行了重构，将它改名为 Iterator 类，并且对它的代码实现做了优化。但是考虑到如果将 Enumeration 直接从 JDK2.0 中删除，那使用 JDK1.0 的项目如果切换到 JDK2.0，代码就会编译不通过。为了避免这种情况的发生，我们必须把项目中所有使用到 Enumeration 的地方，都修改为使用 Iterator 才行。
+
+单独一个项目做 Enumeration 到 Iterator 的替换，勉强还能接受。但是，使用 Java 开发的项目太多了，一次 JDK 的升级，导致所有的项目不做代码修改就会编译报错，这显然是不合理的。这就是我们经常所说的不兼容升级。为了做到兼容使用低版本 JDK 的老代码，我们可以暂时保留 Enumeration 类，并将其实现替换为直接调用 Itertor。代码示例如下所示：
+
+```java
+public class Collections {
+  public static Emueration emumeration(final Collection c) {
+    return new Enumeration() {
+      Iterator i = c.iterator();
+      
+      public boolean hasMoreElments() {
+        return i.hashNext();
+      }
+      
+      public Object nextElement() {
+        return i.next():
+      }
+    }
+  }
+}
+```
+
+适配不同格式的数据
+
+适配器模式主要用于接口的适配，实际上，它还可以用在不同格式的数据之间的适配。比如，把从不同征信系统拉取的不同格式的征信数据，统一为相同的格式，以方便存储和使用。再比如，Java 中的 Arrays.asList\(\) 也可以看作一种数据适配器，将数组类型的数据转化为集合容器类型。
+
+```java
+List<String> stooges = Arrays.asList("Larry", "Moe", "Curly");
+```
+
+## 代码位置
+
+\[1\] [**AdapterPattern**](https://github.com/Knowledge-Precipitation-Tribe/Design-patterns/tree/master/%E5%A4%A7%E8%AF%9D%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/src/AdapterPattern)\*\*\*\*
 
