@@ -41,6 +41,9 @@
   * [桥接模式](jie-gou-xing-mo-shi/qiao-jie-mo-shi.md)
   * [装饰器模式](jie-gou-xing-mo-shi/zhuang-shi-qi-mo-shi.md)
   * [适配器模式](jie-gou-xing-mo-shi/kuo-pei-qi-mo-shi.md)
+  * [外观/门面模式](jie-gou-xing-mo-shi/wai-guan-men-mian-mo-shi.md)
+  * [组合模式](jie-gou-xing-mo-shi/zu-he-mo-shi.md)
+  * [享元模式](jie-gou-xing-mo-shi/xiang-yuan-mo-shi.md)
 * [行为型模式](hang-wei-xing-mo-shi.md)
 * [参考文献](can-kao-wen-xian.md)
 
