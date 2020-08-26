@@ -10,3 +10,5 @@
 
 \[5\] 设计模式（最易懂系列）：[https://blog.csdn.net/carson\_ho/category\_6365482.html](https://blog.csdn.net/carson_ho/category_6365482.html)
 
+\[6\] [https://github.com/senghoo/golang-design-pattern](https://github.com/senghoo/golang-design-pattern)
+
